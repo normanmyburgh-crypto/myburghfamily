@@ -96,16 +96,6 @@
         </div>
       </div>
 
-      <!-- Yearly Growth Timeline Section -->
-      <div class="bg-slate-800/90 backdrop-blur-lg border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl">
-        <div class="text-center mb-8">
-          <span class="inline-block bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs px-3 py-1 rounded-full mb-2 font-semibold uppercase tracking-wider">Growing Up Journey</span>
-          <h3 class="text-2xl md:text-3xl font-playful text-white">Elijah's Yearly Timeline</h3>
-          <p class="text-xs text-slate-400 mt-1">Click any year's photo to open our private Google Drive photo & video album!</p>
-        </div>
-        <div id="timelineContainer" class="relative border-l-2 border-indigo-500/40 ml-4 md:ml-6 space-y-8 pl-6 md:pl-8"></div>
-      </div>
-
       <!-- Live Global Wish Wall Section -->
       <div id="wishWallSection" class="bg-slate-800/90 backdrop-blur-lg border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl">
         <h3 class="text-xl font-playful text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-heart text-pink-400"></i> Family Wish Wall</h3>
@@ -145,7 +135,7 @@
       
       <div id="pinPromptView">
         <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-lock text-amber-400 mr-2"></i> Parent Access</h3>
-        <p class="text-xs text-slate-400 mb-4">Enter your 4-digit PIN to edit reveal settings & timeline albums.</p>
+        <p class="text-xs text-slate-400 mb-4">Enter your 4-digit PIN to edit reveal settings.</p>
         <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN (Default: 1234)" class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-lg tracking-widest text-white mb-4 focus:outline-none focus:border-indigo-500">
         <p id="pinError" class="text-xs text-rose-400 mb-3 hidden">Incorrect PIN. Try again.</p>
         <button onclick="verifyPin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">Unlock Settings</button>
@@ -181,24 +171,13 @@
           </div>
         </div>
 
-        <hr class="border-slate-700">
-
-        <div>
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-timeline text-cyan-400 mr-2"></i> Manage Yearly Timeline (2027-2044)</h3>
-            <button onclick="addTimelineYear()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium rounded-lg">+ Add Year</button>
-          </div>
-          <p class="text-xs text-slate-400 mb-4">Paste each year's Google Drive folder link and photo URL below so family can browse albums.</p>
-          <div id="timelineEditorList" class="space-y-4"></div>
-        </div>
-
         <button onclick="saveParentConfig()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition sticky bottom-0 shadow-lg">Save & Apply Changes</button>
       </div>
     </div>
   </div>
 
   <script>
-const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyD-JYjkcswS_HZQ3UZ5u_mNo7jVzvZHoYg",
       authDomain: "gender-reveal-5ef1f.firebaseapp.com",
       databaseURL: "https://gender-reveal-5ef1f-default-rtdb.firebaseio.com",
@@ -211,39 +190,19 @@ const firebaseConfig = {
     let db = null;
     let wishesRef = null;
 
-    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
+    if (firebaseConfig.apiKey) {
       firebase.initializeApp(firebaseConfig);
       db = firebase.database();
       wishesRef = db.ref('wishes');
     }
-
-    // Track user's initial guess
-    let currentUserGuess = null;
 
     let config = {
       correctGender: 'Boy',
       babyName: 'Elijah',
       meaning: 'Meaning: My God is Yahweh — Strength, Faith & Divine Purpose',
       videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      pin: '1234',
-      timeline: generateDefaultTimeline()
+      pin: '1234'
     };
-
-    function generateDefaultTimeline() {
-      let list = [];
-      for (let i = 1; i <= 18; i++) {
-        let yr = 2026 + i;
-        list.push({
-          year: yr,
-          age: `Age ${i}`,
-          title: i === 1 ? "First Steps & First Birthday!" : `Elijah at ${i} Years Old`,
-          photo: "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600",
-          driveUrl: "https://drive.google.com/drive/folders/YOUR_GOOGLE_DRIVE_FOLDER_ID",
-          description: i === 1 ? "Learning to walk, discovering new sounds, and smiling every single day." : "Growing up fast, learning new skills, and bringing so much joy to our family."
-        });
-      }
-      return list;
-    }
 
     let localWishes = [];
 
@@ -251,11 +210,9 @@ const firebaseConfig = {
       const savedConfig = localStorage.getItem('parentConfig');
       if (savedConfig) {
         config = JSON.parse(savedConfig);
-        if (!config.timeline) config.timeline = generateDefaultTimeline();
       }
 
       applyConfigToUI();
-      renderTimeline();
       listenForWishes();
     });
 
@@ -264,46 +221,74 @@ const firebaseConfig = {
       document.getElementById('nameMeaningText').innerText = config.meaning;
     }
 
-    function renderTimeline() {
-      const container = document.getElementById('timelineContainer');
-      if (!config.timeline || config.timeline.length === 0) {
-        container.innerHTML = `<p class="text-xs text-slate-500 italic">Timeline events will appear here.</p>`;
-        return;
-      }
-
-      container.innerHTML = config.timeline.map((item) => `
-        <div class="relative group">
-          <div class="absolute -left-[35px] md:-left-[41px] top-1 w-5 h-5 rounded-full bg-indigo-500 border-4 border-slate-800 shadow"></div>
-          <div class="bg-slate-900/70 border border-slate-700/80 rounded-2xl p-5 hover:border-indigo-500/50 transition">
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-              <span class="bg-indigo-500/20 text-indigo-300 text-xs font-bold px-3 py-1 rounded-full">${item.year} (${item.age})</span>
-              <a href="${item.driveUrl}" target="_blank" class="text-xs text-cyan-300 hover:text-cyan-200 flex items-center gap-1 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-lg transition">
-                <i class="fa-brands fa-google-drive"></i> Open Google Drive Folder <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-0.5"></i>
-              </a>
-            </div>
-            
-            <h4 class="text-lg font-bold text-white mb-2">${escapeHtml(item.title)}</h4>
-            <p class="text-xs text-slate-300 mb-4 leading-relaxed">${escapeHtml(item.description)}</p>
-
-            <a href="${item.driveUrl}" target="_blank" class="block relative rounded-xl overflow-hidden aspect-video max-h-64 bg-slate-950 border border-slate-700 group/img">
-              <img src="${item.photo}" alt="${item.title}" class="w-full h-full object-cover group-hover/img:scale-105 transition duration-500">
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4">
-                <span class="text-xs font-semibold text-white bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg flex items-center gap-2">
-                  <i class="fa-solid fa-folder-open text-amber-400"></i> Click to view all photos & videos for ${item.year}
-                </span>
-              </div>
-            </a>
-          </div>
-        </div>
-      `).join('');
-    }
-
     function scrollToWishes() {
       document.getElementById('wishWallSection').scrollIntoView({ behavior: 'smooth' });
     }
 
+    function listenForWishes() {
+      if (wishesRef) {
+        wishesRef.orderByChild('timestamp').on('value', (snapshot) => {
+          const wishes = [];
+          snapshot.forEach((child) => { wishes.unshift(child.val()); });
+          renderWishes(wishes);
+        });
+      } else {
+        const savedWishes = localStorage.getItem('familyWishes');
+        localWishes = savedWishes ? JSON.parse(savedWishes) : [
+          { author: "Grandma & Grandpa", text: "We cannot wait to hold you, little Elijah!", date: "Oct 28, 2026, 09:30 AM" }
+        ];
+        renderWishes(localWishes);
+      }
+    }
+
+    function handlePostWish(e) {
+      e.preventDefault();
+      const author = document.getElementById('wishAuthor').value.trim();
+      const text = document.getElementById('wishMessage').value.trim();
+      if (!author || !text) return;
+
+      const now = new Date();
+      const timeStampStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+      const wishData = { author, text, date: timeStampStr, timestamp: Date.now() };
+
+      if (wishesRef) {
+        wishesRef.push(wishData);
+      } else {
+        localWishes.unshift(wishData);
+        localStorage.setItem('familyWishes', JSON.stringify(localWishes));
+        renderWishes(localWishes);
+      }
+
+      document.getElementById('wishAuthor').value = '';
+      document.getElementById('wishMessage').value = '';
+    }
+
+    function renderWishes(wishes) {
+      const feed = document.getElementById('wishesFeed');
+      if (!wishes || wishes.length === 0) {
+        feed.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">No wishes posted yet. Be the first!</p>`;
+        return;
+      }
+
+      feed.innerHTML = wishes.map(w => `
+        <div class="p-3 bg-slate-900/60 border border-slate-700/50 rounded-xl">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-semibold text-indigo-300">${escapeHtml(w.author)}</span>
+            <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${w.date || 'Recently'}</span>
+          </div>
+          <p class="text-xs text-slate-200 leading-relaxed">${escapeHtml(w.text)}</p>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
     function handleGuess(guessedGender) {
-      currentUserGuess = guessedGender; // Capture user's guess
       confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
       document.getElementById('guessingSection').classList.add('hidden');
 
@@ -329,89 +314,6 @@ const firebaseConfig = {
       })();
     }
 
-    function listenForWishes() {
-      if (wishesRef) {
-        wishesRef.orderByChild('timestamp').on('value', (snapshot) => {
-          const wishes = [];
-          snapshot.forEach((child) => { wishes.unshift(child.val()); });
-          renderWishes(wishes);
-        });
-      } else {
-        const savedWishes = localStorage.getItem('familyWishes');
-        localWishes = savedWishes ? JSON.parse(savedWishes) : [
-          { author: "Grandma Mary", text: "I knew it in my heart! So excited for little Elijah!", guess: "Boy", date: "Oct 28, 2026, 09:30 AM" }
-        ];
-        renderWishes(localWishes);
-      }
-    }
-
-    function handlePostWish(e) {
-      e.preventDefault();
-      const author = document.getElementById('wishAuthor').value.trim();
-      const text = document.getElementById('wishMessage').value.trim();
-      if (!author || !text) return;
-
-      const now = new Date();
-      const timeStampStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-      const wishData = { 
-        author: author, 
-        text: text, 
-        date: timeStampStr, 
-        guess: currentUserGuess || 'Team ' + config.correctGender,
-        timestamp: Date.now() 
-      };
-
-      if (wishesRef) {
-        wishesRef.push(wishData);
-      } else {
-        localWishes.unshift(wishData);
-        localStorage.setItem('familyWishes', JSON.stringify(localWishes));
-        renderWishes(localWishes);
-      }
-
-      document.getElementById('wishAuthor').value = '';
-      document.getElementById('wishMessage').value = '';
-    }
-
-    function renderWishes(wishes) {
-      const feed = document.getElementById('wishesFeed');
-      if (!wishes || wishes.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">No wishes posted yet. Be the first!</p>`;
-        return;
-      }
-
-      feed.innerHTML = wishes.map(w => {
-        const isBoy = w.guess === 'Boy' || w.guess === 'Team Boy';
-        const badgeColor = isBoy 
-          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' 
-          : 'bg-pink-500/20 text-pink-300 border-pink-500/30';
-        const badgeIcon = isBoy ? 'fa-mars' : 'fa-venus';
-        const guessLabel = w.guess ? `Team ${w.guess.replace('Team ', '')}` : 'Guessed!';
-
-        return `
-          <div class="p-3 bg-slate-900/60 border border-slate-700/50 rounded-xl">
-            <div class="flex justify-between items-center mb-1">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-indigo-300">${escapeHtml(w.author)}</span>
-                <span class="text-[10px] font-medium border px-2 py-0.5 rounded-full flex items-center gap-1 ${badgeColor}">
-                  <i class="fa-solid ${badgeIcon} text-[9px]"></i> ${guessLabel}
-                </span>
-              </div>
-              <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${w.date || 'Recently'}</span>
-            </div>
-            <p class="text-xs text-slate-200 leading-relaxed mt-1">${escapeHtml(w.text)}</p>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-      });
-    }
-
     function toggleConfigModal() {
       const modal = document.getElementById('configModal');
       modal.classList.toggle('hidden');
@@ -434,50 +336,9 @@ const firebaseConfig = {
         document.getElementById('cfgMeaning').value = config.meaning;
         document.getElementById('cfgVideoUrl').value = config.videoUrl;
         document.getElementById('cfgPin').value = config.pin;
-
-        renderTimelineEditor();
       } else {
         document.getElementById('pinError').classList.remove('hidden');
       }
-    }
-
-    function renderTimelineEditor() {
-      const listEl = document.getElementById('timelineEditorList');
-      listEl.innerHTML = config.timeline.map((item, index) => `
-        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl space-y-3 timeline-item-row" data-index="${index}">
-          <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-cyan-400">Year ${item.year} (${item.age})</span>
-            <button onclick="removeTimelineYear(${index})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i> Remove</button>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" placeholder="Year (e.g. 2027)" value="${item.year}" class="t-year px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-            <input type="text" placeholder="Age (e.g. Age 1)" value="${item.age}" class="t-age px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-          </div>
-          <input type="text" placeholder="Milestone Title" value="${item.title}" class="t-title w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-          <input type="text" placeholder="Google Drive Folder URL" value="${item.driveUrl}" class="t-drive w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-          <input type="text" placeholder="Photo Preview URL" value="${item.photo}" class="t-photo w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">
-          <textarea placeholder="Description" rows="2" class="t-desc w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-xs text-white">${item.description}</textarea>
-        </div>
-      `).join('');
-    }
-
-    function addTimelineYear() {
-      const nextYr = config.timeline.length > 0 ? config.timeline[config.timeline.length - 1].year + 1 : 2027;
-      const nextAge = config.timeline.length + 1;
-      config.timeline.push({
-        year: nextYr,
-        age: `Age ${nextAge}`,
-        title: `Milestone at ${nextAge}`,
-        photo: "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600",
-        driveUrl: "https://drive.google.com/drive/folders/YOUR_FOLDER_ID",
-        description: "Another wonderful year of growth and memories."
-      });
-      renderTimelineEditor();
-    }
-
-    function removeTimelineYear(index) {
-      config.timeline.splice(index, 1);
-      renderTimelineEditor();
     }
 
     function saveParentConfig() {
@@ -487,23 +348,8 @@ const firebaseConfig = {
       config.videoUrl = document.getElementById('cfgVideoUrl').value;
       config.pin = document.getElementById('cfgPin').value;
 
-      const rows = document.querySelectorAll('.timeline-item-row');
-      let updatedTimeline = [];
-      rows.forEach(row => {
-        updatedTimeline.push({
-          year: parseInt(row.querySelector('.t-year').value) || 2027,
-          age: row.querySelector('.t-age').value,
-          title: row.querySelector('.t-title').value,
-          driveUrl: row.querySelector('.t-drive').value,
-          photo: row.querySelector('.t-photo').value,
-          description: row.querySelector('.t-desc').value
-        });
-      });
-      config.timeline = updatedTimeline;
-
       localStorage.setItem('parentConfig', JSON.stringify(config));
       applyConfigToUI();
-      renderTimeline();
       toggleConfigModal();
     }
 
@@ -519,4 +365,3 @@ const firebaseConfig = {
   </script>
 </body>
 </html>
-
