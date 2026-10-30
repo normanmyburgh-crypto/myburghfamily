@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Special Gender Reveal & Growth Journey!</title>
+  <title>Our Special Gender Reveal!</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Canvas Confetti Library -->
@@ -16,94 +16,295 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Fredoka+One&display=swap');
-    body { font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
-    .font-playful { font-family: 'Fredoka One', cursive; }
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap');
     
-    .bg-video {
-      position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%;
-      z-index: -10; object-fit: cover; filter: brightness(0.65);
+    body { 
+      font-family: 'Nunito', sans-serif; 
+      scroll-behavior: smooth; 
+      background: linear-gradient(135deg, #a7f3d0 0%, #bae6fd 30%, #f0f9ff 50%, #fdf2f8 75%, #fbcfe8 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
     }
-    .modal-backdrop { background-color: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); }
+    
+    .font-playful { font-family: 'Fredoka', cursive; }
+
+    /* Dreamy Ambient Light Glows */
+    .bg-clouds {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 45%),
+        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 50%),
+        radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 40%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Continuous Drifting Clouds Layer */
+    .clouds-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .cloud {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.75);
+      filter: drop-shadow(0 10px 20px rgba(186, 230, 253, 0.5));
+      animation: driftCloud linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes driftCloud {
+      0% { transform: translateX(-300px); }
+      100% { transform: translateX(110vw); }
+    }
+
+    /* Flying Stork Layer */
+    .stork-container {
+      position: fixed;
+      top: 10%;
+      left: -200px;
+      z-index: 3;
+      pointer-events: none;
+      animation: flyStork 36s linear infinite;
+    }
+
+    .stork-wrapper {
+      animation: bobStork 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes flyStork {
+      0% { transform: translateX(0) scaleX(1); }
+      48% { transform: translateX(calc(100vw + 350px)) scaleX(1); }
+      50% { transform: translateX(calc(100vw + 350px)) scaleX(-1); }
+      98% { transform: translateX(-200px) scaleX(-1); }
+      100% { transform: translateX(-200px) scaleX(1); }
+    }
+
+    @keyframes bobStork {
+      0% { transform: translateY(0px) rotate(-2deg); }
+      100% { transform: translateY(-22px) rotate(3deg); }
+    }
+
+    /* Gentle Floating Pastel Bubbles */
+    .bubbles-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: floatUp 14s infinite linear;
+      backdrop-filter: blur(2px);
+      box-shadow: inset 0 0 14px rgba(255, 255, 255, 0.95), 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .bubble-blue {
+      background: radial-gradient(circle at 30% 30%, rgba(224, 242, 254, 0.9), rgba(56, 189, 248, 0.35));
+      border: 1.5px solid rgba(186, 230, 253, 0.9);
+    }
+
+    .bubble-pink {
+      background: radial-gradient(circle at 30% 30%, rgba(252, 231, 243, 0.9), rgba(244, 114, 182, 0.35));
+      border: 1.5px solid rgba(251, 207, 232, 0.9);
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.7) rotate(0deg);
+        opacity: 0;
+      }
+      15% { opacity: 0.8; }
+      85% { opacity: 0.8; }
+      100% {
+        transform: translateY(-115vh) scale(1.25) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Soft Dreamy Card Design */
+    .dreamy-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 248, 252, 0.88) 100%);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(255, 255, 255, 1);
+      border-radius: 2.75rem;
+      box-shadow: 
+        0 25px 50px -12px rgba(56, 189, 248, 0.25),
+        0 20px 40px -15px rgba(244, 114, 182, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 1);
+      position: relative;
+    }
+
+    .dreamy-card::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 2.9rem;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(255, 255, 255, 0.8), rgba(244, 114, 182, 0.3));
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0.6;
+    }
+
+    .modal-backdrop { 
+      background-color: rgba(255, 255, 255, 0.75); 
+      backdrop-filter: blur(8px); 
+    }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+<body class="min-h-screen relative flex flex-col justify-between overflow-x-hidden text-slate-700">
 
-  <!-- Background Video Asset -->
-  <video autoplay muted loop id="bgVideo" class="bg-video">
-    <source src="https://assets.mixkit.co/videos/preview/mixkit-clouds-and-blue-sky-2408-large.mp4" type="video/mp4">
-  </video>
+  <!-- Ambient Light Layer -->
+  <div class="bg-clouds"></div>
+
+  <!-- Rich Drifting Clouds Layer -->
+  <div class="clouds-layer">
+    <i class="fa-solid fa-cloud cloud text-7xl top-[5%]" style="animation-duration: 28s; animation-delay: -2s;"></i>
+    <i class="fa-solid fa-cloud cloud text-9xl top-[18%]" style="animation-duration: 38s; animation-delay: -12s;"></i>
+    <i class="fa-solid fa-cloud cloud text-6xl top-[32%]" style="animation-duration: 24s; animation-delay: -5s;"></i>
+    <i class="fa-solid fa-cloud cloud text-8xl top-[50%]" style="animation-duration: 32s; animation-delay: -18s;"></i>
+    <i class="fa-solid fa-cloud cloud text-7xl top-[68%]" style="animation-duration: 26s; animation-delay: -8s;"></i>
+    <i class="fa-solid fa-cloud cloud text-9xl top-[85%]" style="animation-duration: 35s; animation-delay: -22s;"></i>
+  </div>
+
+  <!-- Flying Stork Graphic -->
+  <div class="stork-container">
+    <div class="stork-wrapper flex items-center">
+      <svg class="w-24 h-24 text-slate-700 drop-shadow-md" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M35 55 C30 52, 20 50, 10 58 C18 64, 28 64, 38 60 C48 56, 52 48, 50 40 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M12 56 C18 54, 25 54, 30 58 C22 62, 16 60, 12 56 Z" fill="#334155"/>
+        <path d="M40 45 C45 25, 55 12, 68 8 C62 20, 52 35, 42 46 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+        <path d="M52 18 C58 12, 66 9, 68 8 C64 18, 56 28, 50 34 Z" fill="#334155"/>
+        <path d="M48 42 C56 38, 62 32, 66 22 C68 20, 72 22, 70 26 C66 36, 58 44, 50 46 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+        <circle cx="70" cy="22" r="5" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+        <circle cx="71" cy="21" r="1" fill="#0f172a"/>
+        <path d="M74 23 L96 28 L74 26 Z" fill="#fb923c"/>
+        <path d="M32 58 L18 82 M36 57 L24 80" stroke="#f97316" stroke-width="2" stroke-linecap="round"/>
+        <path d="M86 27 C86 38, 76 48, 76 54 C76 60, 84 60, 84 54 C84 48, 86 38, 86 27 Z" fill="#38bdf8" opacity="0.4"/>
+        <path d="M74 50 C70 54, 70 64, 78 66 C86 64, 86 54, 82 50 Z" fill="#f472b6" stroke="#ffffff" stroke-width="1.5"/>
+        <path d="M76 51 C76 48, 80 48, 80 51 Z" fill="#fb7185"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Gentle Floating Pastel Bubbles -->
+  <div class="bubbles-container">
+    <div class="bubble bubble-blue w-10 h-10 left-[5%]" style="animation-duration: 12s; animation-delay: 0s;"></div>
+    <div class="bubble bubble-pink w-14 h-14 left-[15%]" style="animation-duration: 15s; animation-delay: 2s;"></div>
+    <div class="bubble bubble-blue w-8 h-8 left-[25%]" style="animation-duration: 11s; animation-delay: 1s;"></div>
+    <div class="bubble bubble-pink w-16 h-16 left-[35%]" style="animation-duration: 16s; animation-delay: 4s;"></div>
+    <div class="bubble bubble-blue w-12 h-12 left-[45%]" style="animation-duration: 13s; animation-delay: 1.5s;"></div>
+    <div class="bubble bubble-pink w-10 h-10 left-[55%]" style="animation-duration: 14s; animation-delay: 3s;"></div>
+    <div class="bubble bubble-blue w-14 h-14 left-[65%]" style="animation-duration: 11s; animation-delay: 0.5s;"></div>
+    <div class="bubble bubble-pink w-18 h-18 left-[75%]" style="animation-duration: 15s; animation-delay: 5s;"></div>
+    <div class="bubble bubble-blue w-9 h-9 left-[85%]" style="animation-duration: 12s; animation-delay: 2s;"></div>
+    <div class="bubble bubble-pink w-12 h-12 left-[95%]" style="animation-duration: 13s; animation-delay: 2.5s;"></div>
+  </div>
 
   <!-- Parent Config Toggle Button -->
-  <button onclick="toggleConfigModal()" class="fixed top-4 right-4 z-40 bg-white/20 hover:bg-white/30 backdrop-blur-md p-3 rounded-full text-white transition shadow-lg" title="Parent Settings">
+  <button onclick="toggleConfigModal()" class="fixed top-4 right-4 z-40 bg-white/90 hover:bg-white text-slate-500 hover:text-slate-800 backdrop-blur-md p-3 rounded-full transition shadow-md border border-white" title="Parent Settings">
     <i class="fa-solid fa-gear text-xl"></i>
   </button>
 
   <!-- Main Container -->
-  <div class="container mx-auto px-4 py-12 max-w-3xl text-center z-10 my-auto">
+  <div class="container mx-auto px-4 py-12 max-w-2xl text-center z-10 my-auto">
     
     <!-- Step 1: The Guessing Game -->
-    <div id="guessingSection" class="bg-slate-800/80 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-2xl transition-all duration-500">
-      <span class="inline-block bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs px-3 py-1 rounded-full mb-4 font-semibold uppercase tracking-wider">Interactive Reveal</span>
-      <h1 class="text-3xl md:text-5xl font-playful text-white mb-4 leading-tight">Boy or Girl? <br><span class="text-indigo-300">Take Your Guess!</span></h1>
-      <p class="text-slate-300 mb-8 text-sm md:text-base">We are so happy to share this moment with you! Before we reveal the big secret, what is your intuition telling you?</p>
+    <div id="guessingSection" class="dreamy-card p-8 md:p-12 transition-all duration-500 relative overflow-hidden">
+      <div class="absolute -top-12 -left-12 w-32 h-32 bg-sky-200/40 rounded-full blur-2xl pointer-events-none"></div>
+      <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-pink-200/40 rounded-full blur-2xl pointer-events-none"></div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <button onclick="handleGuess('Boy')" class="w-full py-5 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold text-xl shadow-lg hover:shadow-cyan-500/25 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3">
-          <i class="fa-solid fa-mars text-2xl"></i> Team Boy
+      <span class="inline-block bg-gradient-to-r from-sky-100 to-blue-100 text-sky-600 border border-sky-200/80 text-xs px-4 py-1.5 rounded-full mb-4 font-bold uppercase tracking-wider shadow-sm">
+        <i class="fa-solid fa-baby mr-1 text-sky-400"></i> Interactive Reveal
+      </span>
+      <h1 class="text-4xl md:text-5xl font-playful text-slate-800 mb-4 leading-tight">Boy or Girl? <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-pink-500">Take Your Guess!</span></h1>
+      <p class="text-slate-600 mb-8 text-base font-medium">We are so happy to share this special moment with you! Before we reveal the big secret, what is your intuition telling you?</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-2">
+        <button onclick="handleGuess('Boy')" class="w-full py-5 rounded-2xl bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 text-white font-bold text-xl shadow-lg hover:shadow-sky-400/40 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3 border-2 border-white/60">
+          <i class="fa-solid fa-mars text-2xl"></i> Team Blue
         </button>
-        <button onclick="handleGuess('Girl')" class="w-full py-5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-400 hover:from-pink-600 hover:to-rose-500 text-white font-bold text-xl shadow-lg hover:shadow-pink-500/25 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3">
-          <i class="fa-solid fa-venus text-2xl"></i> Team Girl
+        <button onclick="handleGuess('Girl')" class="w-full py-5 rounded-2xl bg-gradient-to-r from-pink-400 to-rose-500 hover:from-pink-500 hover:to-rose-600 text-white font-bold text-xl shadow-lg hover:shadow-pink-400/40 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3 border-2 border-white/60">
+          <i class="fa-solid fa-venus text-2xl"></i> Team Pink
         </button>
       </div>
     </div>
 
     <!-- Step 2: Premature Celebration / Wrong Guess -->
-    <div id="fakeoutSection" class="hidden bg-slate-800/90 backdrop-blur-lg border border-amber-500/40 rounded-3xl p-8 shadow-2xl transition-all duration-500">
-      <div class="w-16 h-16 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+    <div id="fakeoutSection" class="hidden dreamy-card p-8 md:p-12 transition-all duration-500">
+      <div class="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner border border-amber-200">
         <i class="fa-solid fa-face-grin-tears"></i>
       </div>
-      <h2 class="text-3xl font-playful text-amber-300 mb-3">WAAAIT A MINUTE! 😜</h2>
-      <p class="text-slate-200 text-lg mb-6 leading-relaxed">
+      <h2 class="text-3xl font-playful text-amber-500 mb-3">WAAAIT A MINUTE! 😜</h2>
+      <p class="text-slate-700 text-lg mb-6 leading-relaxed font-medium">
         Hold your horses! You were so excited with that confetti... but that's <span class="font-bold underline decoration-amber-400">NOT</span> the right gender!
       </p>
-      <p class="text-sm text-slate-400 mb-8">Ready to see the real celebration?</p>
-      <button onclick="showGrandReveal()" class="px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg rounded-2xl shadow-xl transition transform hover:scale-105">
+      <p class="text-sm text-slate-500 mb-8 font-semibold">Ready to see the real celebration?</p>
+      <button onclick="showGrandReveal()" class="px-8 py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg rounded-2xl shadow-lg transition transform hover:scale-105 border-2 border-white/60">
         Click For The Real Reveal! <i class="fa-solid fa-arrow-right ml-2"></i>
       </button>
     </div>
 
     <!-- Step 3: Grand Reveal -->
     <div id="revealSection" class="hidden space-y-8 text-left">
-      <div class="bg-slate-800/90 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-2xl text-center">
-        <div class="mb-4">
-          <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">It's Official!</span>
+      <div class="dreamy-card p-8 md:p-12 text-center">
+        <div class="mb-3">
+          <span class="inline-block bg-gradient-to-r from-sky-100 to-pink-100 text-sky-600 border border-sky-200/80 text-xs px-4 py-1.5 rounded-full font-bold uppercase tracking-wider shadow-sm">
+            <i class="fa-solid fa-sparkles mr-1 text-amber-400"></i> Our Little Miracle
+          </span>
         </div>
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-200 mb-2">YOU GUESSED IT!</h2>
-        <h1 id="babyNameHeading" class="text-4xl md:text-6xl font-playful text-cyan-300 my-4 drop-shadow-md">WELCOME BABY ELIJAH</h1>
-        <p id="nameMeaningText" class="text-slate-300 italic mb-8 max-w-md mx-auto text-sm">"Meaning: My God is Yahweh — Strength, Faith & Divine Purpose"</p>
+        <h1 id="babyNameHeading" class="text-5xl md:text-7xl font-playful text-sky-500 my-4 drop-shadow-sm">ELIJAH</h1>
+        <p id="nameMeaningText" class="text-slate-600 italic mb-6 max-w-md mx-auto text-base font-medium">"Meaning: My God is Yahweh — Strength, Faith & Divine Purpose"</p>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button onclick="openVideoModal()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold text-sm shadow-lg transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-circle-play text-lg text-yellow-300"></i>
-            <span>Watch Name Origin Video</span>
-          </button>
-          
-          <button onclick="scrollToWishes()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-semibold text-sm shadow-lg transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-heart text-lg text-white"></i>
-            <span>Jump to Family Wish Wall</span>
-          </button>
+        <!-- Live Countdown Timer -->
+        <div class="my-6 p-4 bg-white/70 border border-sky-100 rounded-2xl shadow-inner">
+          <p class="text-xs font-bold text-sky-600 uppercase tracking-wider mb-2"><i class="fa-regular fa-clock mr-1"></i> Estimated Arrival Countdown</p>
+          <div class="grid grid-cols-4 gap-2 max-w-xs mx-auto text-center">
+            <div class="bg-sky-100/80 p-2 rounded-xl">
+              <span id="cdDays" class="block text-xl font-bold text-slate-800 font-playful">00</span>
+              <span class="text-[10px] font-semibold text-slate-500 uppercase">Days</span>
+            </div>
+            <div class="bg-pink-100/80 p-2 rounded-xl">
+              <span id="cdHours" class="block text-xl font-bold text-slate-800 font-playful">00</span>
+              <span class="text-[10px] font-semibold text-slate-500 uppercase">Hours</span>
+            </div>
+            <div class="bg-sky-100/80 p-2 rounded-xl">
+              <span id="cdMinutes" class="block text-xl font-bold text-slate-800 font-playful">00</span>
+              <span class="text-[10px] font-semibold text-slate-500 uppercase">Mins</span>
+            </div>
+            <div class="bg-pink-100/80 p-2 rounded-xl">
+              <span id="cdSeconds" class="block text-xl font-bold text-slate-800 font-playful">00</span>
+              <span class="text-[10px] font-semibold text-slate-500 uppercase">Secs</span>
+            </div>
+          </div>
         </div>
+
+        <button onclick="scrollToWishes()" class="w-full max-w-sm mx-auto py-4 rounded-2xl bg-gradient-to-r from-pink-400 to-rose-500 hover:from-pink-500 hover:to-rose-600 text-white font-bold text-base shadow-lg transition flex items-center justify-center gap-2 border-2 border-white/60">
+          <i class="fa-solid fa-heart text-lg"></i>
+          <span>Leave a Blessing on the Wish Wall</span>
+        </button>
       </div>
 
       <!-- Live Global Wish Wall Section -->
-      <div id="wishWallSection" class="bg-slate-800/90 backdrop-blur-lg border border-white/20 rounded-3xl p-6 md:p-8 shadow-2xl">
-        <h3 class="text-xl font-playful text-white mb-4 flex items-center gap-2"><i class="fa-solid fa-heart text-pink-400"></i> Family Wish Wall</h3>
+      <div id="wishWallSection" class="dreamy-card p-6 md:p-8">
+        <h3 class="text-2xl font-playful text-slate-800 mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-heart text-pink-400"></i> Family Wish Wall
+        </h3>
         
         <form id="wishForm" onsubmit="handlePostWish(event)" class="mb-6 space-y-3">
-          <input type="text" id="wishAuthor" placeholder="Your Name or Family Title (e.g. Grandma Mary)" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500">
-          <textarea id="wishMessage" rows="2" placeholder="Leave a sweet blessing or memory..." required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500"></textarea>
-          <button type="submit" id="submitWishBtn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition flex items-center justify-center gap-2">
+          <input type="text" id="wishAuthor" placeholder="Your Name or Family Title (e.g. Grandma Mary)" required class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-sky-400 shadow-inner transition">
+          <textarea id="wishMessage" rows="2" placeholder="Leave a sweet blessing or memory..." required class="w-full px-4 py-3 bg-white/80 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 text-sm focus:outline-none focus:border-sky-400 shadow-inner transition"></textarea>
+          <button type="submit" id="submitWishBtn" class="w-full py-3.5 bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center justify-center gap-2 border border-white/50">
             <i class="fa-solid fa-paper-plane text-xs"></i> Post Wish
           </button>
         </form>
@@ -115,63 +316,50 @@
     </div>
   </div>
 
-  <!-- Storytelling Video Modal -->
-  <div id="videoModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
-    <div class="bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-3xl p-6 relative shadow-2xl">
-      <button onclick="closeVideoModal()" class="absolute -top-3 -right-3 bg-slate-700 text-slate-200 hover:text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <h3 class="text-xl font-playful text-white mb-4 text-center">The Story of Baby's Name</h3>
-      <div class="aspect-video w-full rounded-2xl overflow-hidden bg-black flex items-center justify-center">
-        <iframe id="videoIframe" class="w-full h-full" src="" title="Baby Name Story Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      </div>
-    </div>
-  </div>
-
   <!-- Parent Config Modal -->
   <div id="configModal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-slate-800 border border-slate-700 rounded-3xl w-full max-w-xl p-6 relative shadow-2xl my-8">
-      <button onclick="toggleConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 relative shadow-2xl my-8">
+      <button onclick="toggleConfigModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
       
       <div id="pinPromptView">
-        <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-lock text-amber-400 mr-2"></i> Parent Access</h3>
-        <p class="text-xs text-slate-400 mb-4">Enter your 4-digit PIN to edit reveal settings.</p>
-        <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN (Default: 1234)" class="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-lg tracking-widest text-white mb-4 focus:outline-none focus:border-indigo-500">
-        <p id="pinError" class="text-xs text-rose-400 mb-3 hidden">Incorrect PIN. Try again.</p>
-        <button onclick="verifyPin()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition">Unlock Settings</button>
+        <h3 class="text-xl font-bold text-slate-800 mb-2"><i class="fa-solid fa-lock text-amber-400 mr-2"></i> Parent Access</h3>
+        <p class="text-xs text-slate-500 mb-4">Enter your 4-digit PIN to edit reveal settings.</p>
+        <input type="password" id="pinInput" maxlength="4" placeholder="Enter PIN" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-center text-lg tracking-widest text-slate-800 mb-4 focus:outline-none focus:border-sky-400 shadow-inner">
+        <p id="pinError" class="text-xs text-rose-500 mb-3 hidden">Incorrect PIN. Try again.</p>
+        <button onclick="verifyPin()" class="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl transition shadow-md">Unlock Settings</button>
       </div>
 
       <div id="configFormView" class="hidden space-y-6 max-h-[75vh] overflow-y-auto pr-2">
         <div>
-          <h3 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-sliders text-indigo-400 mr-2"></i> General Settings</h3>
+          <h3 class="text-xl font-bold text-slate-800 mb-2"><i class="fa-solid fa-sliders text-sky-500 mr-2"></i> General Settings</h3>
           <div class="space-y-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Correct Baby Gender</label>
-              <select id="cfgGender" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Correct Baby Gender</label>
+              <select id="cfgGender" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800">
                 <option value="Boy">Boy (Team Blue)</option>
                 <option value="Girl">Girl (Team Pink)</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Baby Name</label>
-              <input type="text" id="cfgName" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Baby Name</label>
+              <input type="text" id="cfgName" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Name Meaning / Subtitle</label>
-              <input type="text" id="cfgMeaning" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Name Meaning / Subtitle</label>
+              <input type="text" id="cfgMeaning" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Video Embed Link (YouTube/Vimeo)</label>
-              <input type="text" id="cfgVideoUrl" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Estimated Due Date</label>
+              <input type="date" id="cfgDueDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Change Parent PIN</label>
-              <input type="password" id="cfgPin" maxlength="4" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Change Parent PIN</label>
+              <input type="password" id="cfgPin" maxlength="4" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800">
             </div>
           </div>
         </div>
 
-        <button onclick="saveParentConfig()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition sticky bottom-0 shadow-lg">Save & Apply Changes</button>
+        <button onclick="saveParentConfig()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition sticky bottom-0 shadow-md">Save & Apply Changes</button>
       </div>
     </div>
   </div>
@@ -196,11 +384,14 @@
       wishesRef = db.ref('wishes');
     }
 
+    let currentUserGuess = null;
+    let countdownInterval = null;
+
     let config = {
       correctGender: 'Boy',
-      babyName: 'Elijah',
+      babyName: 'ELIJAH',
       meaning: 'Meaning: My God is Yahweh — Strength, Faith & Divine Purpose',
-      videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+      dueDate: '2027-04-15',
       pin: '1234'
     };
 
@@ -214,11 +405,43 @@
 
       applyConfigToUI();
       listenForWishes();
+      startCountdown();
     });
 
     function applyConfigToUI() {
-      document.getElementById('babyNameHeading').innerText = `WELCOME BABY ${config.babyName.toUpperCase()}`;
+      document.getElementById('babyNameHeading').innerText = config.babyName.toUpperCase();
       document.getElementById('nameMeaningText').innerText = config.meaning;
+    }
+
+    function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      function updateTimer() {
+        const target = new Date(config.dueDate + 'T00:00:00').getTime();
+        const now = new Date().getTime();
+        const diff = target - now;
+
+        if (diff <= 0) {
+          document.getElementById('cdDays').innerText = "00";
+          document.getElementById('cdHours').innerText = "00";
+          document.getElementById('cdMinutes').innerText = "00";
+          document.getElementById('cdSeconds').innerText = "00";
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('cdDays').innerText = days < 10 ? '0' + days : days;
+        document.getElementById('cdHours').innerText = hours < 10 ? '0' + hours : hours;
+        document.getElementById('cdMinutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('cdSeconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+      }
+
+      updateTimer();
+      countdownInterval = setInterval(updateTimer, 1000);
     }
 
     function scrollToWishes() {
@@ -235,7 +458,7 @@
       } else {
         const savedWishes = localStorage.getItem('familyWishes');
         localWishes = savedWishes ? JSON.parse(savedWishes) : [
-          { author: "Grandma & Grandpa", text: "We cannot wait to hold you, little Elijah!", date: "Oct 28, 2026, 09:30 AM" }
+          { author: "Grandma & Grandpa", text: "We cannot wait to hold you, little Elijah!", guess: "Boy", date: "Oct 28, 2026, 09:30 AM" }
         ];
         renderWishes(localWishes);
       }
@@ -250,7 +473,13 @@
       const now = new Date();
       const timeStampStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ', ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-      const wishData = { author, text, date: timeStampStr, timestamp: Date.now() };
+      const wishData = { 
+        author: author, 
+        text: text, 
+        date: timeStampStr, 
+        guess: currentUserGuess || config.correctGender,
+        timestamp: Date.now() 
+      };
 
       if (wishesRef) {
         wishesRef.push(wishData);
@@ -267,19 +496,33 @@
     function renderWishes(wishes) {
       const feed = document.getElementById('wishesFeed');
       if (!wishes || wishes.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-2">No wishes posted yet. Be the first!</p>`;
+        feed.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-2">No wishes posted yet. Be the first!</p>`;
         return;
       }
 
-      feed.innerHTML = wishes.map(w => `
-        <div class="p-3 bg-slate-900/60 border border-slate-700/50 rounded-xl">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-semibold text-indigo-300">${escapeHtml(w.author)}</span>
-            <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${w.date || 'Recently'}</span>
+      feed.innerHTML = wishes.map(w => {
+        const isBoy = w.guess === 'Boy' || w.guess === 'Team Boy' || w.guess === 'Team Blue';
+        const badgeColor = isBoy 
+          ? 'bg-sky-100 text-sky-600 border-sky-200' 
+          : 'bg-pink-100 text-pink-600 border-pink-200';
+        const badgeIcon = isBoy ? 'fa-mars' : 'fa-venus';
+        const guessLabel = isBoy ? 'Team Blue' : 'Team Pink';
+
+        return `
+          <div class="p-3.5 bg-white/90 border border-slate-100 rounded-xl shadow-sm">
+            <div class="flex justify-between items-center mb-1.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-slate-800">${escapeHtml(w.author)}</span>
+                <span class="text-[10px] font-bold border px-2 py-0.5 rounded-full flex items-center gap-1 ${badgeColor}">
+                  <i class="fa-solid ${badgeIcon} text-[9px]"></i> ${guessLabel}
+                </span>
+              </div>
+              <span class="text-[10px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${w.date || 'Recently'}</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(w.text)}</p>
           </div>
-          <p class="text-xs text-slate-200 leading-relaxed">${escapeHtml(w.text)}</p>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function escapeHtml(str) {
@@ -289,7 +532,8 @@
     }
 
     function handleGuess(guessedGender) {
-      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+      currentUserGuess = guessedGender;
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
       document.getElementById('guessingSection').classList.add('hidden');
 
       if (guessedGender === config.correctGender) {
@@ -334,10 +578,10 @@
         document.getElementById('cfgGender').value = config.correctGender;
         document.getElementById('cfgName').value = config.babyName;
         document.getElementById('cfgMeaning').value = config.meaning;
-        document.getElementById('cfgVideoUrl').value = config.videoUrl;
+        document.getElementById('cfgDueDate').value = config.dueDate || '2027-04-15';
         document.getElementById('cfgPin').value = config.pin;
       } else {
-        document.getElementById('pinError').classList.remove('hidden');
+        document.getElementById('pinError').classList.add('hidden');
       }
     }
 
@@ -345,22 +589,13 @@
       config.correctGender = document.getElementById('cfgGender').value;
       config.babyName = document.getElementById('cfgName').value;
       config.meaning = document.getElementById('cfgMeaning').value;
-      config.videoUrl = document.getElementById('cfgVideoUrl').value;
+      config.dueDate = document.getElementById('cfgDueDate').value;
       config.pin = document.getElementById('cfgPin').value;
 
       localStorage.setItem('parentConfig', JSON.stringify(config));
       applyConfigToUI();
+      startCountdown();
       toggleConfigModal();
-    }
-
-    function openVideoModal() {
-      document.getElementById('videoIframe').src = config.videoUrl;
-      document.getElementById('videoModal').classList.remove('hidden');
-    }
-
-    function closeVideoModal() {
-      document.getElementById('videoIframe').src = '';
-      document.getElementById('videoModal').classList.add('hidden');
     }
   </script>
 </body>
