@@ -198,20 +198,20 @@
   </div>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY_HERE",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+const firebaseConfig = {
+      apiKey: "AIzaSyD-JYjkcswS_HZQ3UZ5u_mNo7jVzvZHoYg",
+      authDomain: "gender-reveal-5ef1f.firebaseapp.com",
+      databaseURL: "https://gender-reveal-5ef1f-default-rtdb.firebaseio.com",
+      projectId: "gender-reveal-5ef1f",
+      storageBucket: "gender-reveal-5ef1f.firebasestorage.app",
+      messagingSenderId: "527229941535",
+      appId: "1:527229941535:web:3ca73c3c879ae44407222a"
     };
 
     let db = null;
     let wishesRef = null;
 
-    if (firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
+    if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY_HERE") {
       firebase.initializeApp(firebaseConfig);
       db = firebase.database();
       wishesRef = db.ref('wishes');
